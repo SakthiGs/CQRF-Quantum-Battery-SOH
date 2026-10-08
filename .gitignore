@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Credentials
+.env
+.env.*
+*.pem
+*.key
+*credentials*
+*token*
+
+# Research data and checkpoints
+*.npz
+*.npy
+*.pkl
+*.pickle
+*.pt
+*.pth
+*.h5
+*.hdf5
+*.mat
+*.csv
+*.parquet
+
+# Logs and temporary files
+*.log
+.DS_Store

@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use these notebooks, please cite the IEEE Access article."
+type: article
+authors:
+  - family-names: Gunasekar
+    given-names: Sakthi Prabhu
+  - family-names: Rangarajan
+    given-names: Prasanna Kumar
+title: "Coupled Quantum Reservoir Features for Multi-Chemistry Battery State-of-Health Estimation"
+journal: "IEEE Access"
+volume: 14
+start: 132697
+end: 132718
+year: 2026
+doi: 10.1109/ACCESS.2026.3727788
+url: "https://doi.org/10.1109/ACCESS.2026.3727788"

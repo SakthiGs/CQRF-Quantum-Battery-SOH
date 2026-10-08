@@ -1,0 +1,12 @@
+# Dependency names inferred from notebook imports; NOT a tested or pinned environment.
+# For reproducible reruns, the original package versions must be supplied or tested.
+numpy
+pandas
+scipy
+scikit-learn
+torch
+pennylane
+psutil
+qiskit
+qiskit-ibm-runtime
+# google-colab is provided within Colab; install separately only when appropriate.
