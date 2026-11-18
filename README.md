@@ -10,6 +10,39 @@ This is a **selected notebook release**, not a complete reproduction package for
 
 CQRF uses a fixed 10-qubit quantum reservoir (4 auxiliary + 6 processor qubits) to produce 57 measured features. Only the classical compact bottleneck readout (57 → 2 → 2 → 1; 125 trainable parameters) is trained. QRR is the recurrent baseline.
 
+## Architecture (released XJTU CQRF + CBR implementation)
+
+The following diagram summarizes the **simulator-based CQRF pipeline implemented in [`CQRF_XJTU_10Seeds.ipynb`](CQRF_XJTU_10Seeds.ipynb)**. It is a high-level map of the code, not a claim that every paper experiment or the IBM hardware implementation follows an identical execution path.
+
+```mermaid
+flowchart TD
+    A["Battery-cycle data: 8 input features"] --> B["Cell-disjoint evaluation; training-only normalization; first 5 cycles excluded (XJTU)"]
+    B --> C["Fixed seeded linear projection: 8 inputs to 6 processor angles"]
+    C --> D["10-qubit CQRF: 4 auxiliary qubits and 6 processor qubits"]
+    D --> E["Within-register CNOTs; cross-register CRY coupling (c = 0.3); 2 fixed random reservoir layers"]
+    E --> F["57 expectation-value features"]
+    F --> G["Standardize features using training data only"]
+    G --> H["Compact bottleneck readout (CBR): 57 to 2 to 2 to 1"]
+    H --> I["Predicted battery state of health"]
+```
+
+### What the quantum reservoir computes
+
+| Component | Released XJTU configuration |
+|---|---|
+| Input | 8 battery-cycle features; seeded fixed projection into 6 processor rotations |
+| Quantum registers | 4 auxiliary / memory-side qubits (wires 0–3) and 6 processor qubits (wires 4–9) |
+| Reservoir | 2 fixed layers of seeded single-qubit rotations and entangling CNOTs |
+| Coupling | Direct, reverse, and skip `CRY` connections between registers; coupling parameter `c = 0.3` |
+| Quantum measurements | 18 processor `X/Y/Z` expectations + 15 processor-pair `ZZ` + 24 cross-register `ZZ` = **57 features** |
+| Trainable component | Classical `57 → 2 → 2 → 1` tanh MLP (**125 trainable parameters**); reservoir parameters are fixed |
+| Reservoir initialization | Seed 42 in the released XJTU comparison; readout seeds 0–9 |
+| Evaluation | Batch-wise leave-one-cell-out (XJTU); normalization fitted using training cells |
+
+**Important CQRF versus QRR distinction.** The released CQRF feature extractor sets the four auxiliary-register input angles to zero for each sample and **does not update them from previous time steps**. The auxiliary qubits participate in entangling gates and cross-register observables, but are *not a recurrent state*. The matched [QRR baseline](QRR_XJTU_10Seeds.ipynb) reads out four additional auxiliary `Z` expectations to update its recurrent memory angles between time steps. Both models expose the same 57 features to the classical readout.
+
+**Implementation pointers.** In the released XJTU notebooks, see `CoupledQuantumReservoirFeatures10q` for the CQRF circuit, `QuantumRecurrentReservoir10q` for the QRR baseline, and `TinyMLP2Readout` for the trainable CBR. These are currently defined inside the notebooks, not exported as a pip-installable library.
+
 ## Notebooks
 
 | Notebook | Contents | Scope |
