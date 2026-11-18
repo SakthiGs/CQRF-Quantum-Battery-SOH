@@ -10,9 +10,33 @@ This is a **selected notebook release**, not a complete reproduction package for
 
 CQRF uses a fixed 10-qubit quantum reservoir (4 auxiliary + 6 processor qubits) to produce 57 measured features. Only the classical compact bottleneck readout (57 → 2 → 2 → 1; 125 trainable parameters) is trained. QRR is the recurrent baseline.
 
+## Repository layout
+
+```text
+CQRF-Quantum-Battery-SOH/
+├── README.md                   # Project overview and architecture
+├── CITATION.cff                # Citation for the IEEE Access article
+├── LICENSE
+├── requirements.txt            # Not a verified environment lockfile
+├── docs/
+│   ├── DATA.md                 # Dataset sources and required external artifacts
+│   └── REPRODUCIBILITY.md      # Release scope, checks and known limitations
+└── notebooks/
+    ├── README.md              # Experiment index
+    ├── xjtu/
+    │   ├── CQRF_XJTU_10Seeds.ipynb
+    │   └── QRR_XJTU_10Seeds.ipynb
+    ├── mit/
+    │   └── CQRF_QRR_MIT_Seeds7-9.ipynb
+    └── hardware/
+        └── CQRF_IBM_QPU_Extended_150PerDataset.ipynb
+```
+
+The notebook files are moved **without modifying any cells or saved outputs**. The MIT 3-seed notebook and extended hardware run remain distinct from the paper's full ten-seed simulation and 50-sample-per-dataset QPU audit. See [experiment index](notebooks/README.md) and [reproducibility notes](docs/REPRODUCIBILITY.md).
+
 ## Architecture (released XJTU CQRF + CBR implementation)
 
-The following diagram summarizes the **simulator-based CQRF pipeline implemented in [`CQRF_XJTU_10Seeds.ipynb`](CQRF_XJTU_10Seeds.ipynb)**. It is a high-level map of the code, not a claim that every paper experiment or the IBM hardware implementation follows an identical execution path.
+The following diagram summarizes the **simulator-based CQRF pipeline implemented in [`notebooks/xjtu/CQRF_XJTU_10Seeds.ipynb`](notebooks/xjtu/CQRF_XJTU_10Seeds.ipynb)**. It is a high-level map of the code, not a claim that every paper experiment or the IBM hardware implementation follows an identical execution path.
 
 ```mermaid
 flowchart TD
@@ -39,7 +63,7 @@ flowchart TD
 | Reservoir initialization | Seed 42 in the released XJTU comparison; readout seeds 0–9 |
 | Evaluation | Batch-wise leave-one-cell-out (XJTU); normalization fitted using training cells |
 
-**Important CQRF versus QRR distinction.** The released CQRF feature extractor sets the four auxiliary-register input angles to zero for each sample and **does not update them from previous time steps**. The auxiliary qubits participate in entangling gates and cross-register observables, but are *not a recurrent state*. The matched [QRR baseline](QRR_XJTU_10Seeds.ipynb) reads out four additional auxiliary `Z` expectations to update its recurrent memory angles between time steps. Both models expose the same 57 features to the classical readout.
+**Important CQRF versus QRR distinction.** The released CQRF feature extractor sets the four auxiliary-register input angles to zero for each sample and **does not update them from previous time steps**. The auxiliary qubits participate in entangling gates and cross-register observables, but are *not a recurrent state*. The matched [QRR baseline](notebooks/xjtu/QRR_XJTU_10Seeds.ipynb) reads out four additional auxiliary `Z` expectations to update its recurrent memory angles between time steps. Both models expose the same 57 features to the classical readout.
 
 **Implementation pointers.** In the released XJTU notebooks, see `CoupledQuantumReservoirFeatures10q` for the CQRF circuit, `QuantumRecurrentReservoir10q` for the QRR baseline, and `TinyMLP2Readout` for the trainable CBR. These are currently defined inside the notebooks, not exported as a pip-installable library.
 
@@ -47,10 +71,10 @@ flowchart TD
 
 | Notebook | Contents | Scope |
 |---|---|---|
-| `CQRF_XJTU_10Seeds.ipynb` | CQRF + CBR, XJTU | 10 readout seeds; batch-wise leave-one-cell-out evaluation |
-| `QRR_XJTU_10Seeds.ipynb` | QRR + CBR, XJTU | 10 readout seeds; matched batch-wise evaluation |
-| `CQRF_QRR_MIT_3Seeds.ipynb` | Paired CQRF + CBR and QRR + CBR, MIT | Seeds 7, 8, and 9; a subset of the paper's 10-seed evaluation |
-| `CQRF_MIT_IBM_QPU_150Samples.ipynb` | Real IBM hardware CQRF feature inference | Original notebook covers **MIT, HUST, and TJU**, 150 samples **per dataset**; this repository highlights the MIT portion. QRR was **not** run on QPU. |
+| `notebooks/xjtu/CQRF_XJTU_10Seeds.ipynb` | CQRF + CBR, XJTU | 10 readout seeds; batch-wise leave-one-cell-out evaluation |
+| `notebooks/xjtu/QRR_XJTU_10Seeds.ipynb` | QRR + CBR, XJTU | 10 readout seeds; matched batch-wise evaluation |
+| `notebooks/mit/CQRF_QRR_MIT_Seeds7-9.ipynb` | Paired CQRF + CBR and QRR + CBR, MIT | Seeds 7, 8, and 9; a subset of the paper's 10-seed evaluation |
+| `notebooks/hardware/CQRF_IBM_QPU_Extended_150PerDataset.ipynb` | Real IBM hardware CQRF feature inference | Original notebook covers **MIT, HUST, and TJU**, 150 samples **per dataset**; this repository highlights the MIT portion. QRR was **not** run on QPU. |
 
 ## Comparison with the published paper
 
@@ -73,7 +97,7 @@ The **extended notebook** is configured for **150 samples per dataset** (450 tot
 
 ## Obtain the datasets
 
-The public source datasets and their provenance are documented in [`DATA.md`](DATA.md). In particular:
+The public source datasets and their provenance are documented in [`docs/DATA.md`](docs/DATA.md). In particular:
 
 - **XJTU:** [official Zenodo archive](https://doi.org/10.5281/zenodo.10963339) and [upstream preprocessing repository](https://github.com/wang-fujin/Battery-dataset-preprocessing-code-library).
 - **MIT:** [MATR battery data project](https://data.matr.io/1/projects/5c48dd2bc625d700019f3204) and [dataset article](https://doi.org/10.1038/s41560-019-0356-8).
@@ -82,7 +106,7 @@ The public source datasets and their provenance are documented in [`DATA.md`](DA
 
 ## Usage and dependencies
 
-These are preserved experiment notebooks, **not** turnkey rerunnable scripts. They reference the original authors' Google Drive directory layout, `.npz` feature caches, processed battery data, and (for the QPU notebook) trained checkpoint files. Those input artifacts are not included here. See [`DATA.md`](DATA.md).
+These are preserved experiment notebooks, **not** turnkey rerunnable scripts. They reference the original authors' Google Drive directory layout, `.npz` feature caches, processed battery data, and (for the QPU notebook) trained checkpoint files. Those input artifacts are not included here. See [`docs/DATA.md`](docs/DATA.md).
 
 1. Open the desired notebook in Jupyter/Google Colab and read its setup cells.
 2. Install the dependencies in [`requirements.txt`](requirements.txt), using compatible versions for your environment. Exact original package versions were not recovered and this list is **not** a verified lockfile.
