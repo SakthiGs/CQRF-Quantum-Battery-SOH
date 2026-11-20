@@ -6,7 +6,7 @@ Research notebooks accompanying:
 
 ## Scope
 
-This is a **selected notebook release**, not a complete reproduction package for all four datasets in the article. It focuses on XJTU and MIT for simulated CQRF/QRR comparisons and includes a separate extended IBM Quantum hardware feasibility notebook. The original paper also evaluates HUST and TJU; those main experiments are **not** included in this release.
+This is a **selected notebook release**, not a complete reproduction package for all four datasets in the article. It includes XJTU and a three-seed MIT subset, **archived HUST paired CQRF/QRR exploratory notebooks (seeds 0–9; not validated against the published HUST averages)**, and a separate extended IBM Quantum hardware feasibility notebook. Main TJU simulations are not included.
 
 CQRF uses a fixed 10-qubit quantum reservoir (4 auxiliary + 6 processor qubits) to produce 57 measured features. Only the classical compact bottleneck readout (57 → 2 → 2 → 1; 125 trainable parameters) is trained. QRR is the recurrent baseline.
 
@@ -28,11 +28,17 @@ CQRF-Quantum-Battery-SOH/
     │   └── QRR_XJTU_10Seeds.ipynb
     ├── mit/
     │   └── CQRF_QRR_MIT_Seeds7-9.ipynb
+    ├── hust/
+    │   ├── README.md
+    │   ├── CQRF_QRR_HUST_v3_Seeds0-2.ipynb
+    │   ├── CQRF_QRR_HUST_v3_Seeds3-5.ipynb
+    │   ├── CQRF_QRR_HUST_v3_Seeds6-7.ipynb
+    │   └── CQRF_QRR_HUST_v3_Seeds8-9_Corrected.ipynb
     └── hardware/
         └── CQRF_IBM_QPU_Extended_150PerDataset.ipynb
 ```
 
-The notebook files are moved **without modifying any cells or saved outputs**. The MIT 3-seed notebook and extended hardware run remain distinct from the paper's full ten-seed simulation and 50-sample-per-dataset QPU audit. See [experiment index](notebooks/README.md) and [reproducibility notes](docs/REPRODUCIBILITY.md).
+All notebook files are retained **without modifying any cells or saved outputs**. The HUST notebooks are an archived v3 experiment set, **not a validated numerical reproduction of the published HUST results**. The MIT 3-seed notebook and extended hardware run remain distinct from the paper's full ten-seed simulation and 50-sample-per-dataset QPU audit. See [experiment index](notebooks/README.md) and [reproducibility notes](docs/REPRODUCIBILITY.md).
 
 ## Architecture (released XJTU CQRF + CBR implementation)
 
@@ -74,6 +80,7 @@ flowchart TD
 | `notebooks/xjtu/CQRF_XJTU_10Seeds.ipynb` | CQRF + CBR, XJTU | 10 readout seeds; batch-wise leave-one-cell-out evaluation |
 | `notebooks/xjtu/QRR_XJTU_10Seeds.ipynb` | QRR + CBR, XJTU | 10 readout seeds; matched batch-wise evaluation |
 | `notebooks/mit/CQRF_QRR_MIT_Seeds7-9.ipynb` | Paired CQRF + CBR and QRR + CBR, MIT | Seeds 7, 8, and 9; a subset of the paper's 10-seed evaluation |
+| [`notebooks/hust/`](notebooks/hust/) | Four archived HUST paired CQRF + CBR / QRR + CBR notebooks | Seeds 0–9 configured across files; saved results include reused/skipped seeds; **published HUST metrics not independently reproduced** |
 | `notebooks/hardware/CQRF_IBM_QPU_Extended_150PerDataset.ipynb` | Real IBM hardware CQRF feature inference | Original notebook covers **MIT, HUST, and TJU**, 150 samples **per dataset**; this repository highlights the MIT portion. QRR was **not** run on QPU. |
 
 ## Comparison with the published paper
@@ -86,6 +93,8 @@ MAPE is reported on the original fractional scale (lower is better). The noteboo
 | XJTU | QRR + CBR | 0.0203 | 0.020225 | Small discrepancy; not identical at four-decimal rounding precision |
 | MIT | CQRF + CBR | 0.0131 | 0.013200 | 3-seed subset (7–9), not published 10-seed mean |
 | MIT | QRR + CBR | 0.0157 | 0.015203 | 3-seed subset (7–9), not published 10-seed mean |
+| HUST | CQRF + CBR | 0.0221 | Not verified | Four v3 archives contain partial/reused results and require protocol/aggregate reconciliation |
+| HUST | QRR + CBR | 0.0501 | Not verified | Archived v3 QRR results differ materially from the published mean |
 
 The two XJTU figures are close to the paper but should not be described as exact rounded matches; differences may reflect experiment/aggregation details that this release does not resolve.
 
@@ -125,7 +134,7 @@ See [`LICENSE`](LICENSE) for the proposed permissive code license. Confirm that 
 
 ## Reproducibility limitations
 
-- Selected experiments only; not an exhaustive release for every table in the article.
+- Selected experiments only; not an exhaustive release for every table in the article. The four HUST notebooks are **archival exploratory artifacts**, not a validated reproduction of HUST Table 5.
 - Preprocessed data, quantum feature caches, and model weights may be required but are not included.
 - Results are from saved notebook outputs and have not been freshly rerun as part of this release.
 - Published 50-sample hardware audit and extended 150-MIT-sample hardware run are separate protocols.
